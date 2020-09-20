@@ -6,7 +6,7 @@ const url = "https://www.albion-online-data.com/api/v2/stats/prices";
 
 const base = 9999999999999;
 let json = "";
-let city = "";
+let city = [];
 
 const search = async (item, location, quality) => {
 	try {
@@ -14,30 +14,23 @@ const search = async (item, location, quality) => {
 			`${url}/${item}?locations=${location}&qualities=${quality}`
 		);
 		json = JSON.parse(response.body);
-		//console.table(json);
 	} catch (e) {
 		console.log("Item not found");
+		console.error(e);
 		process.exit(1);
 		return;
 	}
 	let min = base;
 	for (e of json) {
-		if (e.buy_price_min < min && e.buy_price_min > 0) {
-			min = e.buy_price_max;
-			city = e.city;
-		}
+		if (e.sell_price_min > 0)
+			city.push({city:e.city,price:formatter.format(e.sell_price_min),quality:e.quality});
 	}
-	if (min == base) {
-		console.log("Item not found");
-	} else {
-		min = formatter.format(min);
-		console.log(`Found on city ${city} with price ${min} silver coins`);
-	}
+	console.table(city);
 };
 
 const main = async () => {
 	const city = arg.city || arg.c || "";
-	const quality = arg.quality || arg.q;
+	const quality = arg.quality || arg.q || "";
 	if (arg.item || arg.i) {
 		const item = arg.item || arg.i;
 		await search(item, city, quality);
