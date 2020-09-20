@@ -11,7 +11,7 @@ let city = "";
 const search = async (item, location, quality) => {
 	try {
 		const response = await request(
-			`${url}/${item}?locations=${location}&quilities=${quality}`
+			`${url}/${item}?locations=${location}&qualities=${quality}`
 		);
 		json = JSON.parse(response.body);
 		// console.table(json);
