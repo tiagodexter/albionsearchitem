@@ -8,10 +8,10 @@ const base = 9999999999999;
 let json = "";
 let city = [];
 
-const search = async (item, location, quality) => {
+const search = async (item, location, quality,runes = "") => {
 	try {
 		const response = await request(
-			`${url}/${item}?locations=${location}&qualities=${quality}`
+			`${url}/${item}${runes}?locations=${location}&qualities=${quality}`
 		);
 		json = JSON.parse(response.body);
 	} catch (e) {
@@ -31,13 +31,17 @@ const search = async (item, location, quality) => {
 const main = async () => {
 	const city = arg.city || arg.c || "";
 	const quality = arg.quality || arg.q || "";
+	let runes;
+	if (arg.runes || arg.r) {
+		let r = arg.runes || arg.r;
+		runes = `@${r}`;
+	}
 	if (arg.item || arg.i) {
 		const item = arg.item || arg.i;
-		await search(item, city, quality);
+		await search(item, city, quality,runes);
 	} else {
 		const item = await list_cat();
-		await search(item, city, quality);
-		process.exit(1);
+		await search(item, city, quality,runes);
 	}
 };
 
